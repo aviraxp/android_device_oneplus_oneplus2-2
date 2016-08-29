@@ -42,6 +42,9 @@ on early-fs
 on init
     chmod 0644 /proc/cmdline
 
+    # Shim camera lib
+    export LD_SHIM_LIBS "/system/lib/hw/camera.msm8994.so|libop2_cam.so"
+
     # Support legacy paths
     symlink /sdcard /mnt/sdcard
     symlink /sdcard /storage/sdcard0
@@ -166,7 +169,7 @@ on init
     chmod 660 /sys/class/leds/green/duty_pcts
     chmod 660 /sys/class/leds/blue/duty_pcts
 
-    # Add for enginerr app for sys/class selinux recon
+    # Add for engineer app for sys/class selinux recon
     restorecon /sys/class/leds/keyboard-backlight/brightness
     restorecon /sys/class/leds/button-backlight/brightness
     restorecon /sys/class/leds/red/brightness
@@ -624,6 +627,7 @@ service energy-awareness /system/bin/energy-awareness
 
 on property:sys.boot_completed=1
     write /dev/kmsg "Boot completed "
+    setprop sys.io.scheduler "cfq"
 
 # corefile limit and ETB enabling
 on property:persist.debug.trace=1
@@ -1046,5 +1050,4 @@ service msm_irqbalance /system/bin/msm_irqbalance -f /system/vendor/etc/msm_irqb
     class main
     user root
     group root
-    disabled
     writepid /dev/cpuset/system-background/tasks
